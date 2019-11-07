@@ -100,7 +100,7 @@ Returns fused XML document
 
 Recognized options:
 * `preferSlaveInner` controls ambigiuty resolution
-* `autoSegment` allows slave smarkup segmentation in case of conflicting markup
+* `autoSegment` allows slave markup segmentation in case of conflicting markup
 * `stripSlaveTopTag` allows `fuse` to ignore top-level tag from the slave XML
 * `nsmap` provides namespace mapping for building the output document
    (see `lxmlx-js` doc for more details on namespaces)
