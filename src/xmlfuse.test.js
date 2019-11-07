@@ -5,7 +5,14 @@ import {
     fuse,
 } from './xmlfuse.js';
 
-import { fromString, toString, scan, unscan, ENTER, EXIT, TEXT } from '@innodatalabs/lxmlx-js';
+import {
+    fromString,
+    toString,
+    scan,
+    ENTER,
+    EXIT,
+    TEXT
+} from '@innodatalabs/lxmlx-js';
 
 test('textOffset', () => {
     const xml = fromString('<a>Hello, <i>bright</i> <b>world</b></a>');

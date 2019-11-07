@@ -205,7 +205,7 @@ function* analyze(events1, events2, options) {
     const sync = [];
 
     for (const [master, slave] of zip([...asTokenStream(events1)], [...asTokenStream(events2)])) {
-        assert(master.text === slave.text, 'unexpectedly different text: "' + master.text + '" vs "' + slave.text + '"');
+        assert(master.text === slave.text);
         sync.push({
             master: master,
             slave: slave,
@@ -228,64 +228,23 @@ function* analyze(events1, events2, options) {
             assert(x.type === ENTER, 'localReduce1');
             outPrefix.splice(0, 0, x);
             const [y] = suffix.splice(0, 1);
-            assert(y.type === EXIT, 'localReduce2 ' + y.type);
-            assert(y.peer === x, 'localReduce3 ' + y.peer.tag + ' ' + x.tag);
+            assert(y.type === EXIT, 'localReduce2');
+            assert(y.peer === x, 'localReduce3');
             outSuffix.push(y);
         }
     }
 
-    function assertSyncConsistency(sync) {
-        const stack = [];
-        for (let i = 0; i < sync.length; i++) {
-            const s = sync[i];
-            stack.push(...s.master.prefix.filter(x => x.type!==SPOT));
-            for (const e of s.master.suffix) {
-                assert(e.type===EXIT, '(master) not exit');
-                const p = stack.pop();
-                assert(p.type===ENTER, '(master) not enter')
-                assert(p === e.peer, '(master) not peer')
-            }
-        }
-        assert(stack.length === 0, '(master) unbalanced');
-
-        for (let i = 0; i < sync.length; i++) {
-            const s = sync[i];
-            stack.push(...s.slave.prefix.filter(x => x.type!==SPOT));
-            for (const e of s.slave.suffix) {
-                assert(e.type===EXIT, '(slave) not exit');
-                const p = stack.pop();
-                assert(p.type===ENTER, '(slave) not enter')
-                assert(p === e.peer, '(slave) not peer')
-            }
-        }
-        assert(stack.length === 0, '(slave) unbalanced');
-
-        for (let i = 0; i < sync.length; i++) {
-            const s = sync[i];
-            stack.push(...s.prefix.filter(x => x.type!==SPOT));
-            for (const e of s.suffix) {
-                assert(e.type===EXIT, 'not exit');
-                const p = stack.pop();
-                assert(p.type===ENTER, 'not enter')
-                assert(p === e.peer, 'not peer')
-            }
-        }
-        assert(stack.length === 0, 'unbalanced');
-    }
-    assertSyncConsistency(sync)
-
     function helper(index) {
         for (let i = 0; i < index; i++) {
             const s = sync[i];
-            assert(s.master.suffix.length === 0, 'precondition failed: ' + s.master.suffix);
-            assert(s.slave.suffix.length === 0, 'precondition failed: ' + s.slave.suffix);
+            assert(s.master.suffix.length === 0, 'precondition failed (1)');
+            assert(s.slave.suffix.length === 0, 'precondition failed (2)');
         }
 
         const h = sync[index];
         for (let i = index; i >= 0; i--) {
             const l = sync[i];
 
-            assertSyncConsistency(sync)
             if (options.preferSlaveInner) {
                 localReduce(l.slave.prefix, h.slave.suffix, l.prefix, h.suffix);
                 localReduce(l.master.prefix, h.master.suffix, l.prefix, h.suffix);
@@ -293,7 +252,6 @@ function* analyze(events1, events2, options) {
                 localReduce(l.master.prefix, h.master.suffix, l.prefix, h.suffix);
                 localReduce(l.slave.prefix, h.slave.suffix, l.prefix, h.suffix);
             }
-            assertSyncConsistency(sync)
 
             if (h.master.suffix.length === 0 && h.slave.suffix.length === 0) {
                 return;  // reached our invariant, done helper
@@ -334,7 +292,6 @@ function* analyze(events1, events2, options) {
                     }
                 }
                 assert( sync[i-1].slave.suffix.length === 0, '(1) sanity');
-                assertSyncConsistency(sync)
                 continue;
             } else {
                 assert(l.slave.prefix.length > 0, 'helper-b0');
@@ -354,7 +311,6 @@ function* analyze(events1, events2, options) {
                     }
                 }
                 assert(sync[i].master.suffix.length === 0, '(2) sanity')
-                assertSyncConsistency(sync)
                 return;
             }
         }
