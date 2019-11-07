@@ -4,10 +4,7 @@
   "description": "Fusing together two XML markups",
   "author": "Mike Kroutikov",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/innodatalabs/xmlfuse-js.git"
-  },
+  "repository": "github:innodatalabs/xmlfuse-js",
   "main": "build/xmlfuse.js",
   "module": "src/xmlfuse.js",
   "dependencies": {
