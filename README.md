@@ -1,7 +1,7 @@
 # xmlfuse-js
 
 [![Build Status](https://travis-ci.org/innodatalabs/xmlfuse-js.svg?branch=master)](https://travis-ci.org/innodatalabs/xmlfuse-js)
-[![NPM package version](https://badge.fury.io/js/xmlfuse-js.svg)](https://badge.fury.io/js/xmlfuse-js)
+[![npm version](https://badge.fury.io/js/%40innodatalabs%2Fxmlfuse-js.svg)](https://badge.fury.io/js/%40innodatalabs%2Fxmlfuse-js)
 
 XML representations as a JSON stream. Convenient for content-oriented XML tasks.
 
