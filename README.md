@@ -8,6 +8,7 @@ XML representations as a JSON stream. Convenient for content-oriented XML tasks.
 This is a JS port of Python package [xmlfuse](https://pypi.org/project/xmlfuse/).
 
 ## Installation
+
 ```
 npm i @innodatalabs/xmlfuse-js --save
 ```

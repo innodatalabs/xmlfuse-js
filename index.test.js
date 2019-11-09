@@ -4,7 +4,7 @@ import {
     segmentText,
     asTokenStream,
     fuse,
-} from './xmlfuse.js';
+} from './index.mjs';
 import {
     fromString,
     toString,
