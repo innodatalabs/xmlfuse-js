@@ -24,7 +24,7 @@ export function fuse(xml1, xml2, options) {
 
     const events = fuseEvents(events1, events2, options);
 
-    return unscan(events, {nsmap: options.nsmap})
+    return unscan(events, {nsmap: options.nsmap});
 }
 
 
@@ -40,7 +40,7 @@ export function* fuseEvents(events1, events2, options) {
     const tx1 = textOf(ev1);
     const tx2 = textOf(ev2);
     if (tx1 !== tx2) {
-        raiseTextDiff(tx1, tx2)
+        raiseTextDiff(tx1, tx2);
     }
 
     const offsets = new Set([...textOffsets(ev1), ...textOffsets(ev2)]);
@@ -57,18 +57,18 @@ function raiseTextDiff(t1, t2) {
         if (t1[i] != t2[i]) {
             const snippet1 = t1.slice(i < 20 ? 0 : i-20, i+20);
             const snippet2 = t2.slice(i < 20 ? 0 : i-20, i+20);
-            throw new Error('Input documents have different text at offset '
-                + i + ':\n' + snippet1 + '\n' + snippet2);
+            throw new Error('Input documents have different text at offset ' +
+                i + ':\n' + snippet1 + '\n' + snippet2);
         }
     }
     const snippet1 = t1.slice(l < 20 ? 0 : l-20, l+20);
     const snippet2 = t2.slice(l < 20 ? 0 : l-20, l+20);
     if (t1.length > t2.length) {
-        throw new Error('Master document has longer text than the slave:\n'
-        + snippet1 + '\n' + snippet2);
+        throw new Error('Master document has longer text than the slave:\n' +
+            snippet1 + '\n' + snippet2);
     } else {
-        throw new Error('Master document has shorter text than the slave:\n'
-        + snippet1 + '\n' + snippet2);
+        throw new Error('Master document has shorter text than the slave:\n' +
+            snippet1 + '\n' + snippet2);
     }
 }
 
@@ -310,7 +310,7 @@ function* analyze(events1, events2, options) {
                         break;
                     }
                 }
-                assert(sync[i].master.suffix.length === 0, '(2) sanity')
+                assert(sync[i].master.suffix.length === 0, '(2) sanity');
                 return;
             }
         }

@@ -1,10 +1,7 @@
-all: bld
+all: lint test
 
-test:
+lint:
+	npm run lint
+
+test: lint
 	npm run test
-
-bld: test
-	npm run build
-
-clean:
-	rm -rf build/
