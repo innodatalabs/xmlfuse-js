@@ -5,16 +5,19 @@
   "author": "Mike Kroutikov",
   "license": "MIT",
   "repository": "github:innodatalabs/xmlfuse-js",
-  "module": "src/xmlfuse.js",
+  "main": "index.js",
+  "module": "index",
   "dependencies": {
-    "@innodatalabs/lxmlx-js": "^2.0.0"
+    "@innodatalabs/lxmlx-js": "^2.0.1"
   },
   "devDependencies": {
     "ava": "^1.4.1",
     "browser-env": "^3.2.6",
     "jshint": "^2.10.3",
     "require-extension-hooks": "^0.3.3",
-    "require-extension-hooks-babel": "^1.0.0-beta.1"
+    "require-extension-hooks-babel": "^1.0.0-beta.1",
+    "rollup": "^1.26.3",
+    "rollup-plugin-node-resolve": "^5.2.0"
   },
   "ava": {
     "require": [
@@ -23,7 +26,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "lint": "jshint src/",
+    "lint": "jshint index.mjs",
     "test": "ava"
   }
 }
