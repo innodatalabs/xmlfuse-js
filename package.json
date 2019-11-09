@@ -1,29 +1,29 @@
 {
   "name": "@innodatalabs/xmlfuse-js",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Fusing together two XML markups",
   "author": "Mike Kroutikov",
   "license": "MIT",
   "repository": "github:innodatalabs/xmlfuse-js",
-  "main": "build/xmlfuse.js",
   "module": "src/xmlfuse.js",
   "dependencies": {
-    "@innodatalabs/lxmlx-js": "github:innodatalabs/lxmlx-js"
+    "@innodatalabs/lxmlx-js": "^2.0.0"
   },
   "devDependencies": {
-    "cssstyle": "^2.0.0",
-    "jest": "24.9.0",
-    "jest-environment-jsdom-fourteen": "^0.1.0",
-    "jsdom": "^15.2.1",
-    "rollup": "^1.26.3",
-    "rollup-jest": "0.0.2"
+    "ava": "^1.4.1",
+    "browser-env": "^3.2.6",
+    "jshint": "^2.10.3",
+    "require-extension-hooks": "^0.3.3",
+    "require-extension-hooks-babel": "^1.0.0-beta.1"
   },
-  "jest": {
-    "preset": "rollup-jest",
-    "testEnvironment": "jest-environment-jsdom-fourteen"
+  "ava": {
+    "require": [
+      "./.avaconfig.js"
+    ]
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "jest"
+    "lint": "jshint src/",
+    "test": "ava"
   }
 }
