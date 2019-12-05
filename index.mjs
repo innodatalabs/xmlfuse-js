@@ -3,36 +3,30 @@ import { scan, unscan, textOf, withPeer, ENTER, TEXT, EXIT, COMMENT, PI } from '
 const SPOT = 'spot';  // internal event type to mark zero-length markup
 
 function assert(condition, message) {
-    if (!condition) throw new Error('Assertion failed: ' + message);
+    if (!condition) {
+        throw new Error('Assertion failed: ' + message);
+    }
 }
 
 export function fuse(xml1, xml2, options) {
-    options = Object.assign({
-        autoSegment: true,
-        preferSlaveInner: true,
-        stripSlaveTopTag: true,
-        nsmap: undefined,
-    }, options);
+    const { stripSlaveTopTag=true, nsmap } = options || {};
 
     const events1 = [...scan(xml1)];
     const events2 = [...scan(xml2)];
 
-    if (options.stripSlaveTopTag) {
+    if (stripSlaveTopTag) {
         events2.splice(0, 1);
         events2.splice(events2.length-1, 1);
     }
 
     const events = fuseEvents(events1, events2, options);
 
-    return unscan(events, {nsmap: options.nsmap});
+    return unscan(events, {nsmap});
 }
 
 
 export function* fuseEvents(events1, events2, options) {
-    options = Object.assign({
-        autoSegment: true,
-        preferSlaveInner: true,
-    }, options);
+    const { autoSegment=true, preferSlaveInner=true } = options || {};
 
     const ev1 = [...events1];
     const ev2 = [...events2];
@@ -237,7 +231,7 @@ function* analyze(events1, events2, options) {
     function helper(index) {
         for (let i = 0; i < index; i++) {
             const s = sync[i];
-            assert(s.master.suffix.length === 0, 'precondition failed (1)');
+            assert(s.master.suffix.length === 0, 'precondition failed (1) ' + index + ' ' + i);
             assert(s.slave.suffix.length === 0, 'precondition failed (2)');
         }
 
@@ -305,12 +299,12 @@ function* analyze(events1, events2, options) {
                 sync[index+1].slave.prefix.push(...l.slave.prefix);
                 l.slave.prefix.length = 0;
                 for (let j = i - 1; j >= 0; j--) {
-                    localReduce(sync[j].master.prefix, sync[i].master.suffix, sync[j].prefix, sync[i].suffix);
-                    if (sync[i].master.suffix.legth === 0) {
+                    localReduce(sync[j].master.prefix, h.master.suffix, sync[j].prefix, h.suffix);
+                    if (h.master.suffix.length === 0) {
                         break;
                     }
                 }
-                assert(sync[i].master.suffix.length === 0, '(2) sanity');
+                assert(h.master.suffix.length === 0, '(2) sanity');
                 return;
             }
         }

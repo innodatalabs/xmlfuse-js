@@ -4,11 +4,13 @@ import {
     segmentText,
     asTokenStream,
     fuse,
+    fuseEvents,
 } from './index.mjs';
 import {
     fromString,
     toString,
     scan,
+    unscan,
     ENTER,
     EXIT,
     TEXT
@@ -234,3 +236,543 @@ test('fuse (test_18)', t => {
     t.throws(() => fuse(xml1, xml2), /Master document has longer text than the slave:/);
 });
 
+test('fuseEvents bug', t => {
+    const markup1 = [
+      {
+        "type": "text",
+        "text": "ABDELLI, M."
+      },
+      {
+        "type": "text",
+        "text": ", "
+      },
+      {
+        "type": "text",
+        "text": "MOGHRANI, H."
+      },
+      {
+        "type": "text",
+        "text": ", "
+      },
+      {
+        "type": "text",
+        "text": "ABOUN, A."
+      },
+      {
+        "type": "text",
+        "text": " & "
+      },
+      {
+        "type": "text",
+        "text": "MAACHI, R."
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "2016"
+      },
+      {
+        "type": "text",
+        "text": ". "
+      },
+      {
+        "type": "text",
+        "text": "Algerian "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://www.thomsonreuters.com/science/journals}italic",
+        "attrib": {}
+      },
+      {
+        "type": "text",
+        "text": "Mentha pulegium"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": " L. leaves essential oil: chemical composition, antimicrobial, insecticidal and antioxidant activities"
+      },
+      {
+        "type": "text",
+        "text": ". "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://www.thomsonreuters.com/science/journals}italic",
+        "attrib": {}
+      },
+      {
+        "type": "text",
+        "text": "Industrial Crops and Products"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://www.thomsonreuters.com/science/journals}bold",
+        "attrib": {}
+      },
+      {
+        "type": "text",
+        "text": "94"
+      },
+      {
+        "type": "text",
+        "text": ": "
+      },
+      {
+        "type": "text",
+        "text": "197–"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": "205"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+    ];
+
+    const markup2 = [
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}r",
+        "attrib": {
+          "id": "data000042:019"
+        }
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "author-person"
+        }
+      },
+      {
+        "type": "text",
+        "text": "ABDELLI"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "M"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "author-person"
+        }
+      },
+      {
+        "type": "text",
+        "text": "MOGHRANI"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "H"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "author-person"
+        }
+      },
+      {
+        "type": "text",
+        "text": "ABOUN"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "A"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "&"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "author-person"
+        }
+      },
+      {
+        "type": "text",
+        "text": "MAACHI"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "R"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "publicationyear"
+        }
+      },
+      {
+        "type": "text",
+        "text": "2016"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "titletext"
+        }
+      },
+      {
+        "type": "text",
+        "text": "Algerian"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "Mentha"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "pulegium"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "L"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "leaves"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "essential"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "oil"
+      },
+      {
+        "type": "text",
+        "text": ":"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "chemical"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "composition"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "antimicrobial"
+      },
+      {
+        "type": "text",
+        "text": ","
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "insecticidal"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "and"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "antioxidant"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "activities"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "sourcetitle"
+        }
+      },
+      {
+        "type": "text",
+        "text": "Industrial"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "Crops"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "and"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "text",
+        "text": "Products"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "vol"
+        }
+      },
+      {
+        "type": "text",
+        "text": "94"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": ":"
+      },
+      {
+        "type": "text",
+        "text": " "
+      },
+      {
+        "type": "enter",
+        "tag": "{http://innodatalabs.com/brs}s",
+        "attrib": {
+          "l": "pages"
+        }
+      },
+      {
+        "type": "text",
+        "text": "197"
+      },
+      {
+        "type": "text",
+        "text": "–"
+      },
+      {
+        "type": "text",
+        "text": "205"
+      },
+      {
+        "type": "exit"
+      },
+      {
+        "type": "text",
+        "text": "."
+      },
+      {
+        "type": "exit"
+      }
+    ];
+
+    const fused = [...fuseEvents(markup1, markup2)];
+    const xmltext = toString(unscan(fused));
+    t.is(xmltext, `<ns0:r xmlns:ns0="http://innodatalabs.com/brs" id="data000042:019">\
+<ns0:s l="author-person">ABDELLI, M.</ns0:s>, <ns0:s l="author-person">MOGHRANI, H.</ns0:s>, <ns0:s l="author-person">ABOUN, A.</ns0:s> &amp; <ns0:s l="author-person">MAACHI, R.</ns0:s> \
+<ns0:s l="publicationyear">2016</ns0:s>. <ns0:s l="titletext">Algerian <ns1:italic xmlns:ns1="http://www.thomsonreuters.com/science/journals">Mentha pulegium</ns1:italic> L. leaves essential oil: chemical composition, antimicrobial, insecticidal and antioxidant activities</ns0:s>. \
+<ns1:italic xmlns:ns1="http://www.thomsonreuters.com/science/journals"><ns0:s l="sourcetitle">Industrial Crops and Products</ns0:s></ns1:italic> \
+<ns1:bold xmlns:ns1="http://www.thomsonreuters.com/science/journals"><ns0:s l="vol">94</ns0:s>: <ns0:s l="pages">197–</ns0:s></ns1:bold><ns0:s l="pages">205</ns0:s>.</ns0:r>\
+`);  // really testing that prev line did not crash with assertion
+});
